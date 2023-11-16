@@ -39,7 +39,9 @@ public class ArrayTupleType implements TupleType<Object[]>,
 	private static JavaType<?>[] getTypeDescriptors(SqmExpressible<?>[] components) {
 		final JavaType<?>[] typeDescriptors = new JavaType<?>[components.length];
 		for ( int i = 0; i < components.length; i++ ) {
-			typeDescriptors[i] = components[i].getExpressibleJavaType();
+			typeDescriptors[i] = components[i] != null
+				? components[i].getExpressibleJavaType()
+				: null;
 		}
 		return typeDescriptors;
 	}

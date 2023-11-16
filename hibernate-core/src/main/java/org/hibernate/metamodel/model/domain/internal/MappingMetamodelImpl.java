@@ -71,6 +71,7 @@ import org.hibernate.spi.NavigablePath;
 import org.hibernate.sql.ast.tree.from.TableGroup;
 import org.hibernate.type.BasicType;
 import org.hibernate.type.ComponentType;
+import org.hibernate.type.JavaObjectType;
 import org.hibernate.type.Type;
 import org.hibernate.type.descriptor.java.JavaType;
 import org.hibernate.type.descriptor.java.spi.JavaTypeRegistry;
@@ -814,7 +815,8 @@ public class MappingMetamodelImpl extends QueryParameterBindingTypeResolverImpl
 			final TupleType<?> tupleType = (TupleType<?>) sqmExpressible;
 			final MappingModelExpressible<?>[] components = new MappingModelExpressible<?>[tupleType.componentCount()];
 			for ( int i = 0; i < components.length; i++ ) {
-				components[i] = resolveMappingExpressible( tupleType.get( i ), tableGroupLocator );
+				MappingModelExpressible<?> component = resolveMappingExpressible( tupleType.get( i ), tableGroupLocator );
+				components[i] = component != null ? component : new JavaObjectType();
 			}
 			final MappingModelExpressible<?> createdMappingModelExpressible = new TupleMappingModelExpressible( components );
 			final MappingModelExpressible<?> existingMappingModelExpressible = tupleTypeCache.putIfAbsent(

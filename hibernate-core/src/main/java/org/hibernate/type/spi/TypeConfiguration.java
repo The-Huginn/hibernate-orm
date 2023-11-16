@@ -57,6 +57,7 @@ import org.hibernate.query.sqm.BinaryArithmeticOperator;
 import org.hibernate.query.sqm.IntervalType;
 import org.hibernate.query.sqm.SqmExpressible;
 import org.hibernate.query.sqm.tree.SqmTypedNode;
+import org.hibernate.query.sqm.tree.expression.SqmParameter;
 import org.hibernate.resource.beans.internal.FallbackBeanInstanceProducer;
 import org.hibernate.resource.beans.spi.ManagedBean;
 import org.hibernate.resource.beans.spi.ManagedBeanRegistry;
@@ -591,7 +592,12 @@ public class TypeConfiguration implements SessionFactoryObserver, Serializable {
 	public SqmExpressible<?> resolveTupleType(List<? extends SqmTypedNode<?>> typedNodes) {
 		final SqmExpressible<?>[] components = new SqmExpressible<?>[typedNodes.size()];
 		for ( int i = 0; i < typedNodes.size(); i++ ) {
-			final SqmExpressible<?> sqmExpressible = typedNodes.get( i ).getNodeType();
+			SqmTypedNode<?> tupleElement = typedNodes.get(i);
+			final SqmExpressible<?> sqmExpressible = tupleElement.getNodeType();
+			// keep null value for Named Parameters
+			if (tupleElement instanceof SqmParameter<?> && sqmExpressible == null) {
+				continue;
+			}
 			components[i] = sqmExpressible != null
 					? sqmExpressible
 					: getBasicTypeForJavaType( Object.class );
